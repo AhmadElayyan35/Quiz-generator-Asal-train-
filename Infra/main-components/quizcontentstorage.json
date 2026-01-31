@@ -1,0 +1,18 @@
+{
+  "@odata.context": "https://searchdocsofmaterial.search.windows.net/$metadata#datasources/$entity",
+  "@odata.etag": "\"0x8DD7CDE5F4914C7\"",
+  "name": "quizcontentstorage",
+  "type": "azureblob",
+  "subtype": null,
+  "credentials": {
+    "connectionString": null
+  },
+  "container": {
+    "name": "testing-material",
+    "query": null
+  },
+  "dataChangeDetectionPolicy": null,
+  "dataDeletionDetectionPolicy": null,
+  "encryptionKey": null,
+  "identity": null
+}

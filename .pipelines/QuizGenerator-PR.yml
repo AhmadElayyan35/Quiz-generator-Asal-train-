@@ -1,0 +1,99 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  frontend_dir: '$(Build.SourcesDirectory)/frontend'
+  backend_dir: '$(Build.SourcesDirectory)/backend'
+  python.version: '3.x'
+  azureSubscriptionEndpoint: 'keyvault-access-service-conn'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+    addToPath: true
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  workingDirectory: $(backend_dir)
+  displayName: 'Install Python backend dependencies'
+
+# ========== Disabled: Run Backend Tests from Key Vault ==========
+- task: AzureCLI@2
+  displayName: '[DISABLED] Run Backend Tests from Key Vault'
+  condition: false
+  inputs:
+    azureSubscription: $(azureSubscriptionEndpoint)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      cd "$(backend_dir)"
+      pytest
+
+# ========== Run Backend and Verify ==========
+- task: AzureCLI@2
+  displayName: 'Run Backend and Verify using Key Vault'
+  inputs:
+    azureSubscription: $(azureSubscriptionEndpoint)
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      cd "$(backend_dir)"
+
+      Write-Output "Starting backend..."
+
+      $proc = Start-Process "python" -ArgumentList "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8000" `
+               -PassThru `
+               -RedirectStandardOutput "stdout.txt" `
+               -RedirectStandardError "stderr.txt"
+
+      Start-Sleep -Seconds 15
+
+      $response = $null
+      try {
+        $response = Invoke-WebRequest -Uri "http://127.0.0.1:8000/docs" -UseBasicParsing -TimeoutSec 5
+      } catch {
+        Write-Error " Failed to connect to backend."
+      }
+
+      $stdout = Get-Content "stdout.txt" -Raw
+      $stderr = Get-Content "stderr.txt" -Raw
+
+      Write-Output "========== STDOUT =========="
+      Write-Output $stdout
+      Write-Output "========== STDERR =========="
+      Write-Output $stderr
+
+      if ($response -ne $null -and $response.StatusCode -eq 200) {
+        Write-Output " Backend started successfully. Killing process ID $($proc.Id)..."
+        Stop-Process -Id $proc.Id -Force
+        exit 0
+      } else {
+        Write-Error " Backend did not respond properly or failed to start."
+        Stop-Process -Id $proc.Id -Force
+        exit 1
+      }
+
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Set up Node.js'
+
+- script: |
+    npm install
+    npm run build
+  workingDirectory: $(frontend_dir)
+  displayName: 'Install and Build Frontend'
+
+# ========== Disabled: Run Frontend Tests ==========
+- script: |
+    npm run test
+  workingDirectory: $(frontend_dir)
+  displayName: '[DISABLED] Run Frontend Tests'
+  condition: false

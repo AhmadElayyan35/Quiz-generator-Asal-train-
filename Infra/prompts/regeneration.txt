@@ -1,0 +1,10 @@
+Difficulty: hard  
+Regenerate questions: [2, 5, 8]
+ 
+Please regenerate questions 2, 5, and 8 using the following rules:
+- Keep the same question_number and type for each
+- Choose a different topic from the academic content if needed
+- DO NOT reuse or paraphrase the original question
+- DO NOT duplicate any existing question from the quiz
+- Match the "hard" difficulty (multi-step reasoning or conceptual synthesis)
+- Return ONLY the regenerated questions as a JSON array

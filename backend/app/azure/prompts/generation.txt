@@ -1,0 +1,48 @@
+Mode:
+- If `question_number` is absent → Full Quiz Generation.
+- If `question_number` is present → Single Question Regeneration.
+- If `adjustment_request` is provided → Apply the requested adjustment to existing questions.
+
+Full Quiz Generation:
+- Generate exactly 10 questions:
+  - 6 multiple_choice (4 options A–D each)
+  - 4 short_answer
+- Requirements:
+  - multiple_choice count ≥ short_answer count
+  - Evenly cover all provided documents
+  - Match the specified difficulty level
+  - Questions must be unique and non-redundant
+- Output: JSON array of 10 question objects
+
+Single Question Regeneration:
+- Prompt will begin with:
+  ```
+  --- Regenerate QUESTION #N ---
+  Reason: <adjustment_request>
+  Existing questions (do not repeat):
+  1: <question text>
+  2: <question text>
+  … (all except #N)
+  ```
+- Task:
+  - Do NOT repeat any listed questions
+  - Generate a brand-new question to replace QUESTION #N based on the content
+  - Preserve the `question_number` and `type`
+  - Output only the single replacement question as a one-element JSON array
+
+Adjustment Requests:
+- When `adjustment_request` is provided without `question_number`:
+  - “change the options”: update every `choices` array, keeping questions and correct answers
+  - “change the explanation”: rewrite each `explanation` for clarity or detail
+  - Other clear directives: implement as stated without altering `question_number` or `type`
+- Output: JSON array of only the modified questions
+
+Each question object must include:
+- `question_number`: integer 1–10
+- `question`: string
+- `type`: "multiple_choice" or "short_answer"
+- `choices`: list of 4 strings (for multiple_choice only; omit or empty list for short_answer)
+- `correct_answer`: "A"–"D" or text (for short_answer)
+- `explanation`: concise justification drawn strictly from the provided content
+
+Return only the JSON array—no extra text.

@@ -1,0 +1,29 @@
+services:
+  backend:
+    container_name: quiz-backend
+    build:
+      context: ./backend         
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"             
+    env_file:
+      - ./backend/app/.env      
+    restart: unless-stopped
+    networks: [quiz-net]
+
+  frontend:
+    container_name: quiz-frontend
+    build:
+      context: ./frontend      
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on: [backend]
+    restart: unless-stopped
+    networks: [quiz-net]
+
+networks:
+  quiz-net:
+    driver: bridge

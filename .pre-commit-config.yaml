@@ -1,0 +1,61 @@
+exclude: ^Infra/
+exclude: ^quiz-generator/
+
+repos:
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3
+        files: \.py$
+
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        name: isort (import sorter)
+        language_version: python3
+        files: \.py$
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.2.0
+    hooks:
+      - id: flake8
+        language_version: python3
+        files: \.py$
+        args: ["--ignore=E501,W503,E203"]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.19.1
+    hooks:
+      - id: pyupgrade
+        args: ["--py311-plus"]
+        files: \.py$
+
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+      - id: autoflake
+        args:
+          [
+            "--remove-all-unused-imports",
+            "--remove-unused-variables",
+            "--in-place",
+            "--expand-star-imports",
+          ]
+        files: \.py$
+  
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+
+# # 1. Install pre-commit into your Git hooks
+# pre-commit install
+
+# # 2. Clean old caches
+# pre-commit clean
+
+# # 3. Run checks on all files
+# pre-commit run --all-files

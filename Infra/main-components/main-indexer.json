@@ -1,0 +1,95 @@
+{
+  "@odata.context": "https://searchdocsofmaterial.search.windows.net/$metadata#indexers/$entity",
+  "@odata.etag": "\"0x8DD7CDE5E3EC378\"",
+  "name": "main-indexer",
+  "dataSourceName": "quizcontentstorage",
+  "skillsetName": "azureblob-skillset",
+  "targetIndexName": "main-index",
+  "disabled": null,
+  "schedule": null,
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "base64EncodeKeys": null,
+    "configuration": {
+      "dataToExtract": "contentAndMetadata",
+      "parsingMode": "default",
+      "imageAction": "generateNormalizedImages"
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_path",
+      "targetFieldName": "docId",
+      "mappingFunction": {
+        "name": "base64Encode",
+        "parameters": null
+      }
+    }
+  ],
+  "outputFieldMappings": [
+    {
+      "sourceFieldName": "/document/merged_content/people",
+      "targetFieldName": "people",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/merged_content/organizations",
+      "targetFieldName": "organizations",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/merged_content/locations",
+      "targetFieldName": "locations",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/merged_content/keyphrases",
+      "targetFieldName": "keyphrases",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/language",
+      "targetFieldName": "language",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/merged_content/translated_text",
+      "targetFieldName": "translated_text",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/merged_content",
+      "targetFieldName": "merged_content",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/text",
+      "targetFieldName": "text",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/layoutText",
+      "targetFieldName": "layoutText",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/imageTags/*/name",
+      "targetFieldName": "imageTags",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/normalized_images/*/imageCaption",
+      "targetFieldName": "imageCaption",
+      "mappingFunction": null
+    },
+    {
+      "sourceFieldName": "/document/extractedChunks",
+      "targetFieldName": "extractedChunks",
+      "mappingFunction": null
+    }
+  ],
+  "cache": null,
+  "encryptionKey": null
+}
